@@ -21,7 +21,7 @@ const (
 
 // Use this type where you only want a JSON-RPC message (notification, request
 // or response).
-type JSONRPCMessage interface {
+type Message interface {
 	JSONRPCVersion() string
 }
 
