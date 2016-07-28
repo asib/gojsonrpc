@@ -49,12 +49,18 @@ func MakeRequest(method string, params interface{}, id uint) (*Request, error) {
 		// Params must be either an array/slice or a map with string keys.
 		value := reflect.ValueOf(params)
 		kind := value.Kind()
-		if kind != reflect.Array && kind != reflect.Slice && kind != reflect.Map {
+		if kind != reflect.Array &&
+			kind != reflect.Slice &&
+			kind != reflect.Map &&
+			kind != reflect.Struct &&
+			kind != reflect.Ptr {
 			return nil, InvalidRequestInvalidParamsType
-		}
-
-		if kind == reflect.Map {
-			if reflect.TypeOf(params).Key().Kind() != reflect.String {
+		} else if kind == reflect.Map && reflect.TypeOf(params).Key().Kind() != reflect.String {
+			return nil, InvalidRequestInvalidParamsType
+		} else if kind == reflect.Ptr {
+			elemKind := reflect.TypeOf(params).Elem().Kind()
+			if elemKind != reflect.Array &&
+				elemKind != reflect.Struct {
 				return nil, InvalidRequestInvalidParamsType
 			}
 		}

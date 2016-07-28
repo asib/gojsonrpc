@@ -83,7 +83,7 @@ func TestCreateNotificationWithParams2(t *testing.T) {
 	}
 }
 
-func TestCreateNotificationWithInvalidParamsType(t *testing.T) {
+func TestCreateNotificationWithInvalidParamsTypeString(t *testing.T) {
 	// Params must be of type array/slice/map.
 	n, err := MakeNotification(testNotificationMethod, "invalid params type")
 	if err == nil {
@@ -96,7 +96,7 @@ func TestCreateNotificationWithInvalidParamsType(t *testing.T) {
 	}
 }
 
-func TestCreateNotificationWithInvalidParamsType2(t *testing.T) {
+func TestCreateNotificationWithInvalidParamsTypeMapWithIntKeys(t *testing.T) {
 	// If params is a map, the keys must be strings.
 	n, err := MakeNotification(testNotificationMethod, map[int]interface{}{1: "test", 2: true})
 	if err == nil {
@@ -106,6 +106,42 @@ func TestCreateNotificationWithInvalidParamsType2(t *testing.T) {
 	}
 	if n != nil {
 		t.Error("notification should be nil")
+	}
+}
+
+func TestCreateNotificationWithInvalidParamsTypeStringPointer(t *testing.T) {
+	// If params is a map, the keys must be strings.
+	str := "test"
+	n, err := MakeNotification(testNotificationMethod, &str)
+	if err == nil {
+		t.Error("should have returned an error")
+	} else if err != InvalidNotificationInvalidParamsType {
+		t.Error("wrong error returned")
+	}
+	if n != nil {
+		t.Error("notification should be nil")
+	}
+}
+
+func TestCreateNotificationWithStructParams(t *testing.T) {
+	// If params is a map, the keys must be strings.
+	_, err := MakeNotification(testNotificationMethod, struct {
+		Testfield  string `json:"key1"`
+		Otherfield int    `json:"key2"`
+	}{"value1", 2})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestCreateNotificationWithStructPointerParams(t *testing.T) {
+	// If params is a map, the keys must be strings.
+	_, err := MakeNotification(testNotificationMethod, &struct {
+		Testfield  string `json:"key1"`
+		Otherfield int    `json:"key2"`
+	}{"value1", 2})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -139,7 +175,7 @@ func TestMarshalThenUnmarshalNotification(t *testing.T) {
 	}
 }
 
-func TestMarshalNotificationWithParams(t *testing.T) {
+func TestMarshalNotificationWithSliceParams(t *testing.T) {
 	n, err := MakeNotification(testNotificationMethod, testNotificationParams2)
 	if err != nil {
 		t.Fatal(err)
@@ -154,6 +190,28 @@ func TestMarshalNotificationWithParams(t *testing.T) {
 		MethodKey, testNotificationMethod,
 		ParamsKey, testNotificationParams2[0], testNotificationParams2[1],
 		testNotificationParams2[2], testNotificationParams2[3])
+	if string(jsonNotif) != expectedJSON {
+		t.Errorf("expected %s, got %s\n", expectedJSON, jsonNotif)
+	}
+}
+
+func TestMarshalNotificationWithStructParams(t *testing.T) {
+	n, err := MakeNotification(testNotificationMethod, &struct {
+		Field1 string `json:"key1"`
+		Field2 int    `json:"key2"`
+	}{"value1", 2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	jsonNotif, err := json.Marshal(n)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedJSON := fmt.Sprintf(`{"%s":"%s","%s":"%s","%s":{"key1":"value1","key2":2}}`,
+		VersionKey, Version,
+		MethodKey, testNotificationMethod,
+		ParamsKey)
 	if string(jsonNotif) != expectedJSON {
 		t.Errorf("expected %s, got %s\n", expectedJSON, jsonNotif)
 	}

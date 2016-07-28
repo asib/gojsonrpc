@@ -30,7 +30,7 @@ func TestCreateRequestWithoutParams(t *testing.T) {
 	}
 }
 
-func TestCreateRequestWithParams(t *testing.T) {
+func TestCreateRequestWithMapParams(t *testing.T) {
 	r, err := MakeRequest(testRequestMethod, testRequestParams, testRequestId)
 	if err != nil {
 		t.Error(err)
@@ -56,7 +56,8 @@ func TestCreateRequestWithParams(t *testing.T) {
 		}
 	}
 }
-func TestCreateRequestWithParams2(t *testing.T) {
+
+func TestCreateRequestWithSliceParams(t *testing.T) {
 	r, err := MakeRequest(testRequestMethod, testRequestParams2, testRequestId)
 	if err != nil {
 		t.Error(err)
@@ -84,7 +85,45 @@ func TestCreateRequestWithParams2(t *testing.T) {
 	}
 }
 
-func TestCreateRequestWithInvalidParamsType(t *testing.T) {
+func TestCreateRequestWithStructParams(t *testing.T) {
+	r, err := MakeRequest(testRequestMethod, struct {
+		Field1 string
+		Field2 int
+	}{"test", 2}, testRequestId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r == nil {
+		t.Error("request should not be nil")
+	}
+	if r.Method() != testRequestMethod {
+		t.Error("method not set correctly")
+	}
+	if r.Params() == nil {
+		t.Error("params should not be nil")
+	}
+}
+
+func TestCreateRequestWithStructPointerParams(t *testing.T) {
+	r, err := MakeRequest(testRequestMethod, &struct {
+		Field1 string
+		Field2 int
+	}{"test", 2}, testRequestId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r == nil {
+		t.Error("request should not be nil")
+	}
+	if r.Method() != testRequestMethod {
+		t.Error("method not set correctly")
+	}
+	if r.Params() == nil {
+		t.Error("params should not be nil")
+	}
+}
+
+func TestCreateRequestWithInvalidParamsTypeString(t *testing.T) {
 	r, err := MakeRequest(testRequestMethod, "invalid params type", testRequestId)
 	if err == nil {
 		t.Error("should have returned an error")
@@ -96,8 +135,21 @@ func TestCreateRequestWithInvalidParamsType(t *testing.T) {
 	}
 }
 
-func TestCreateRequestWithInvalidParamsType2(t *testing.T) {
+func TestCreateRequestWithInvalidParamsTypeMapWithIntKeys(t *testing.T) {
 	r, err := MakeRequest(testRequestMethod, map[int]interface{}{1: "test", 2: true}, testRequestId)
+	if err == nil {
+		t.Error("should have returned an error")
+	} else if err != InvalidRequestInvalidParamsType {
+		t.Error("wrong error returned")
+	}
+	if r != nil {
+		t.Error("request should be nil")
+	}
+}
+
+func TestCreateRequestWithInvalidParamsTypeStringPointer(t *testing.T) {
+	str := "invalid params type"
+	r, err := MakeRequest(testRequestMethod, &str, testRequestId)
 	if err == nil {
 		t.Error("should have returned an error")
 	} else if err != InvalidRequestInvalidParamsType {
@@ -141,7 +193,7 @@ func TestMarshalThenUnmarshalRequest(t *testing.T) {
 	}
 }
 
-func TestMarshalRequestWithParams(t *testing.T) {
+func TestMarshalRequestWithSliceParams(t *testing.T) {
 	r, err := MakeRequest(testRequestMethod, testRequestParams2, testRequestId)
 	if err != nil {
 		t.Fatal(err)
@@ -156,6 +208,28 @@ func TestMarshalRequestWithParams(t *testing.T) {
 		MethodKey, testRequestMethod,
 		ParamsKey, testRequestParams2[0], testRequestParams2[1], testRequestParams2[2], testRequestParams2[3],
 		IDKey, testRequestId)
+	if string(jsonReq) != expectedJSON {
+		t.Errorf("expected %s, got %s\n", expectedJSON, jsonReq)
+	}
+}
+
+func TestMarshalRequestWithStructParams(t *testing.T) {
+	r, err := MakeRequest(testRequestMethod, &struct {
+		Field1 string `json:"key1"`
+		Field2 int    `json:"key2"`
+	}{"test", 2}, testRequestId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	jsonReq, err := json.Marshal(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedJSON := fmt.Sprintf(`{"%s":"%s","%s":"%s","%s":{"key1":"test","key2":2},"%s":%d}`,
+		VersionKey, Version,
+		MethodKey, testRequestMethod,
+		ParamsKey, IDKey, testRequestId)
 	if string(jsonReq) != expectedJSON {
 		t.Errorf("expected %s, got %s\n", expectedJSON, jsonReq)
 	}
