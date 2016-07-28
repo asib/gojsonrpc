@@ -9,7 +9,7 @@ import (
 // ParseIncoming attempts to parse the supplied message into one of the three
 // relevant types: Notification, Request or Response. Callers must run a type
 // assertion to identify which type was returned.
-func ParseIncoming(message string) (interface{}, error) {
+func ParseIncoming(message string) (Message, error) {
 	incomingMap := make(map[string]json.RawMessage)
 	err := json.Unmarshal([]byte(message), &incomingMap)
 	if err != nil {
