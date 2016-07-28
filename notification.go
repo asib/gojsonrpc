@@ -17,6 +17,11 @@ type Notification struct {
 	notificationData
 }
 
+// JSONRPCVersion returns the version of the protocol being used.
+func (n *Notification) JSONRPCVersion() string {
+	return n.notificationData.Jsonrpc
+}
+
 // Method returns the notification's method.
 func (n *Notification) Method() string {
 	return n.notificationData.Method

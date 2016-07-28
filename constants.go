@@ -19,6 +19,15 @@ const (
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
+// Use this type where you only want a JSON-RPC message (notification, request
+// or response).
+type JSONRPCMessage interface {
+	JSONRPCVersion() string
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
 // ParseError is a type definition allowing callers of methods that may
 // return an error of type ParseError to type assert the returned error.
 // ParseError's may be thrown by any function that parses (chiefly ParseIncoming).
@@ -35,6 +44,9 @@ var parseErrors = []string{"invalid version", "invalid message"}
 func (e ParseError) Error() string {
 	return fmt.Sprintf("gojsonrpc: parse error: %s", parseErrors[e])
 }
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
 // ObjectError's may be thrown by any method that must create a Notification,
 // Request or Response struct.

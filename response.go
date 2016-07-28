@@ -23,7 +23,7 @@ type Response struct {
 	responseData
 }
 
-func (r *Response) version() string {
+func (r *Response) JSONRPCVersion() string {
 	return r.responseData.Jsonrpc
 }
 
@@ -111,7 +111,7 @@ func (r *Response) MarshalJSON() ([]byte, error) {
 			Result  interface{} `json:"result"`
 			ID      uint        `json:"id"`
 		}{
-			Jsonrpc: r.version(),
+			Jsonrpc: r.JSONRPCVersion(),
 			Result:  nil,
 			ID:      r.ID(),
 		})

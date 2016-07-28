@@ -17,6 +17,11 @@ type Request struct {
 	requestData
 }
 
+// JSONRPCVersion returns the version of the protocol being used.
+func (n *Request) JSONRPCVersion() string {
+	return n.requestData.Jsonrpc
+}
+
 // Method returns the request's method.
 func (r *Request) Method() string {
 	return r.requestData.Method
