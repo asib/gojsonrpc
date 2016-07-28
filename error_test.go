@@ -56,7 +56,7 @@ func TestCreateErrorWithData2(t *testing.T) {
 			mapData := e.Data().(map[string]interface{})
 			for k, v := range testErrorData2 {
 				if !mapContains(mapData, k, v) {
-					t.Errorf("data {%v:%v} not present\n")
+					t.Errorf("data {%v:%v} not present\n", k, v)
 				}
 			}
 		}

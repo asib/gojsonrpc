@@ -88,7 +88,7 @@ func TestCreateNotificationWithInvalidParamsType(t *testing.T) {
 	n, err := MakeNotification(testNotificationMethod, "invalid params type")
 	if err == nil {
 		t.Error("should have returned an error")
-	} else if err != invalidNotificationInvalidParamsType {
+	} else if err != InvalidNotificationInvalidParamsType {
 		t.Error("wrong error returned")
 	}
 	if n != nil {
@@ -101,7 +101,7 @@ func TestCreateNotificationWithInvalidParamsType2(t *testing.T) {
 	n, err := MakeNotification(testNotificationMethod, map[int]interface{}{1: "test", 2: true})
 	if err == nil {
 		t.Error("should have returned an error")
-	} else if err != invalidNotificationInvalidParamsType {
+	} else if err != InvalidNotificationInvalidParamsType {
 		t.Error("wrong error returned")
 	}
 	if n != nil {
@@ -150,9 +150,9 @@ func TestMarshalNotificationWithParams(t *testing.T) {
 	}
 
 	expectedJSON := fmt.Sprintf(`{"%s":"%s","%s":"%s","%s":["%s",%v,%v,%v]}`,
-		versionKey, version,
-		methodKey, testNotificationMethod,
-		paramsKey, testNotificationParams2[0], testNotificationParams2[1],
+		VersionKey, Version,
+		MethodKey, testNotificationMethod,
+		ParamsKey, testNotificationParams2[0], testNotificationParams2[1],
 		testNotificationParams2[2], testNotificationParams2[3])
 	if string(jsonNotif) != expectedJSON {
 		t.Errorf("expected %s, got %s\n", expectedJSON, jsonNotif)
@@ -170,8 +170,8 @@ func TestMarshalNotificationWithoutParams(t *testing.T) {
 	}
 
 	expectedJSON := fmt.Sprintf(`{"%s":"%s","%s":"%s"}`,
-		versionKey, version,
-		methodKey, testNotificationMethod)
+		VersionKey, Version,
+		MethodKey, testNotificationMethod)
 	if string(jsonNotif) != expectedJSON {
 		t.Errorf("expected %s, got %s\n", expectedJSON, jsonNotif)
 	}

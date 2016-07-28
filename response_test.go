@@ -92,7 +92,7 @@ func TestCreateResponseWithNilError(t *testing.T) {
 	r, err := MakeResponseWithError(nil, testErrorResponseId)
 	if err == nil {
 		t.Error("should return error")
-	} else if err != invalidResponseNilError {
+	} else if err != InvalidResponseNilError {
 		t.Errorf("wrong error returned: expected invalidResponseNilError, got %s\n", err)
 	}
 	if r != nil {
@@ -201,6 +201,20 @@ func TestMarshalResponseWithResult(t *testing.T) {
 	}
 }
 
+func TestMarshalResultResponseWithNilResult(t *testing.T) {
+	r := MakeResponseWithResult(nil, testResultResponseId)
+	jsonResp, err := json.Marshal(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedJSON := `{"jsonrpc":"2.0","result":null,"id":1}`
+
+	if string(jsonResp) != expectedJSON {
+		t.Errorf("got %s expected %s\n", string(jsonResp), expectedJSON)
+	}
+}
+
 func TestUnmarshalResponseWithError(t *testing.T) {
 	jsonResp := `{"jsonrpc":"2.0", "error":{"code":1, "message":"test message", "data":"test"}, "id":1}`
 	matchingE := MakeError(testErrorCode, testErrorMessage, testErrorData)
@@ -245,12 +259,44 @@ func TestUnmarshalResponseWithResult(t *testing.T) {
 	}
 }
 
-func TestUnmarshalResponseWithErrorAndResult(t *testing.T) {
+func TestUnmarshalResponseWithNonNullErrorAndNonNullResult(t *testing.T) {
 	jsonResp := `{"jsonrpc":"2.0", "error":{"code":1, "message":"test message", "data":"test"}, "result":"test", "id":1}`
 	r := new(Response)
 	if err := json.Unmarshal([]byte(jsonResp), r); err == nil {
 		t.Error("should have returned an error")
-	} else if err != invalidMessage {
+	} else if err != InvalidMessage {
+		t.Error("wrong error returned:", err)
+	}
+}
+
+func TestUnmarshalResponseWithNullErrorAndNullResult(t *testing.T) {
+	jsonResp := `{"jsonrpc":"2.0", "error":null, "result":null, "id":1}`
+	r := new(Response)
+	if err := json.Unmarshal([]byte(jsonResp), r); err == nil {
+		t.Error("should have returned an error")
+	} else if err != InvalidMessage {
+		t.Error("wrong error returned:", err)
+	}
+}
+
+func TestUnmarshalResponseWithNullResult(t *testing.T) {
+	jsonResp := `{"jsonrpc":"2.0", "result":null, "id":1}`
+	r := new(Response)
+	if err := json.Unmarshal([]byte(jsonResp), r); err != nil {
+		t.Fatal(err)
+	}
+
+	if !r.IsResult() || r.IsError() {
+		t.Error("IsResult should be true and IsError should be false")
+	}
+}
+
+func TestUnmarshalResponseWithoutResultAndWithoutError(t *testing.T) {
+	jsonResp := `{"jsonrpc":"2.0", "id":1}`
+	r := new(Response)
+	if err := json.Unmarshal([]byte(jsonResp), r); err == nil {
+		t.Error("should have returned an error")
+	} else if err != InvalidMessage {
 		t.Error("wrong error returned:", err)
 	}
 }

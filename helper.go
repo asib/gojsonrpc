@@ -1,3 +1,4 @@
+// Package gojsonrpc provides an interface for dealing with JSON-RPC APIs.
 package gojsonrpc
 
 import (
@@ -5,6 +6,9 @@ import (
 	"reflect"
 )
 
+// ParseIncoming attempts to parse the supplied message into one of the three
+// relevant types: Notification, Request or Response. Callers must run a type
+// assertion to identify which type was returned.
 func ParseIncoming(message string) (interface{}, error) {
 	incomingMap := make(map[string]json.RawMessage)
 	err := json.Unmarshal([]byte(message), &incomingMap)
@@ -13,22 +17,22 @@ func ParseIncoming(message string) (interface{}, error) {
 	}
 
 	// Look for jsonrpc field, return error if not present.
-	if _, ok := incomingMap[versionKey]; !ok {
-		return nil, invalidMessage
+	if _, ok := incomingMap[VersionKey]; !ok {
+		return nil, InvalidMessage
 	}
 
 	// Check version is correct.
 	var incomingVersion string
-	err = json.Unmarshal(incomingMap[versionKey], &incomingVersion)
+	err = json.Unmarshal(incomingMap[VersionKey], &incomingVersion)
 	if err != nil {
 		return nil, err
-	} else if incomingVersion != version {
-		return nil, invalidVersion
+	} else if incomingVersion != Version {
+		return nil, InvalidVersion
 	}
 
 	// Now we need to try to match this object's keys against those of a
 	// notification, request or response.
-	keys := make([]string, 0)
+	var keys []string
 	for k := range incomingMap {
 		keys = append(keys, k)
 	}
@@ -42,10 +46,9 @@ func ParseIncoming(message string) (interface{}, error) {
 	}
 
 	// If not caught by one of the above, must be an malformed message.
-	return nil, invalidMessage
+	return nil, InvalidMessage
 }
 
-//:warning Complete the parse helpers
 func parseIncomingNotification(jsonNotif []byte) (*Notification, error) {
 	notif := new(Notification)
 	if err := json.Unmarshal(jsonNotif, notif); err != nil {
@@ -57,7 +60,7 @@ func parseIncomingNotification(jsonNotif []byte) (*Notification, error) {
 		value := reflect.ValueOf(notif.Params())
 		kind := value.Kind()
 		if kind != reflect.Slice && kind != reflect.Map {
-			return nil, invalidMessage
+			return nil, InvalidMessage
 		}
 	}
 
@@ -78,7 +81,7 @@ func parseIncomingRequest(jsonReq []byte) (*Request, error) {
 		value := reflect.ValueOf(req.Params())
 		kind := value.Kind()
 		if kind != reflect.Slice && kind != reflect.Map {
-			return nil, invalidMessage
+			return nil, InvalidMessage
 		}
 	}
 

@@ -88,7 +88,7 @@ func TestCreateRequestWithInvalidParamsType(t *testing.T) {
 	r, err := MakeRequest(testRequestMethod, "invalid params type", testRequestId)
 	if err == nil {
 		t.Error("should have returned an error")
-	} else if err != invalidRequestInvalidParamsType {
+	} else if err != InvalidRequestInvalidParamsType {
 		t.Error("wrong error returned")
 	}
 	if r != nil {
@@ -100,7 +100,7 @@ func TestCreateRequestWithInvalidParamsType2(t *testing.T) {
 	r, err := MakeRequest(testRequestMethod, map[int]interface{}{1: "test", 2: true}, testRequestId)
 	if err == nil {
 		t.Error("should have returned an error")
-	} else if err != invalidRequestInvalidParamsType {
+	} else if err != InvalidRequestInvalidParamsType {
 		t.Error("wrong error returned")
 	}
 	if r != nil {
@@ -152,10 +152,10 @@ func TestMarshalRequestWithParams(t *testing.T) {
 	}
 
 	expectedJSON := fmt.Sprintf(`{"%s":"%s","%s":"%s","%s":["%s",%v,%v,%v],"%s":%d}`,
-		versionKey, version,
-		methodKey, testRequestMethod,
-		paramsKey, testRequestParams2[0], testRequestParams2[1], testRequestParams2[2], testRequestParams2[3],
-		idKey, testRequestId)
+		VersionKey, Version,
+		MethodKey, testRequestMethod,
+		ParamsKey, testRequestParams2[0], testRequestParams2[1], testRequestParams2[2], testRequestParams2[3],
+		IDKey, testRequestId)
 	if string(jsonReq) != expectedJSON {
 		t.Errorf("expected %s, got %s\n", expectedJSON, jsonReq)
 	}
@@ -172,9 +172,9 @@ func TestMarshalRequestWithoutParams(t *testing.T) {
 	}
 
 	expectedJSON := fmt.Sprintf(`{"%s":"%s","%s":"%s","%s":%d}`,
-		versionKey, version,
-		methodKey, testRequestMethod,
-		idKey, testRequestId)
+		VersionKey, Version,
+		MethodKey, testRequestMethod,
+		IDKey, testRequestId)
 	if string(jsonReq) != expectedJSON {
 		t.Errorf("expected %s, got %s\n", expectedJSON, jsonReq)
 	}

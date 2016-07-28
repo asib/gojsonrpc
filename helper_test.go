@@ -102,14 +102,14 @@ func TestIsResultResponse(t *testing.T) {
 
 func TestParseIncomingWithMalformedMessage(t *testing.T) {
 	rawMsg := `{"key":"value"}`
-	if _, err := ParseIncoming(rawMsg); err != invalidMessage {
+	if _, err := ParseIncoming(rawMsg); err != InvalidMessage {
 		t.Error("should have returned invalid message error")
 	}
 }
 
 func TestParseIncomingWithInvalidVersion(t *testing.T) {
 	rawMsg := `{"jsonrpc":"1.0", "method":"test"}`
-	if _, err := ParseIncoming(rawMsg); err != invalidVersion {
+	if _, err := ParseIncoming(rawMsg); err != InvalidVersion {
 		t.Error("should have returned invalid version error")
 	}
 }
@@ -140,7 +140,7 @@ func TestParseIncomingWithNotificationWithParams(t *testing.T) {
 
 func TestParseIncomingWithNotificationWithInvalidParams(t *testing.T) {
 	rawMsg := `{"jsonrpc":"2.0", "method":"test", "params":"test1"}`
-	if _, err := ParseIncoming(rawMsg); err != invalidMessage {
+	if _, err := ParseIncoming(rawMsg); err != InvalidMessage {
 		t.Error("should have returned invalid message error")
 	}
 }
@@ -171,7 +171,7 @@ func TestParseIncomingWithRequestWithParams(t *testing.T) {
 
 func TestParseIncomingWithRequestWithInvalidParams(t *testing.T) {
 	rawMsg := `{"jsonrpc":"2.0", "method":"test", "params":"test1", "id":1}`
-	if _, err := ParseIncoming(rawMsg); err != invalidMessage {
+	if _, err := ParseIncoming(rawMsg); err != InvalidMessage {
 		t.Error("should have returned invalid message error")
 	}
 }
@@ -206,7 +206,7 @@ func TestParseIncomingWithResultResponse(t *testing.T) {
 
 func TestParseIncomingWithMalformedNotification(t *testing.T) {
 	rawMsg := `{"jsonrpc":"2.0", "method":"test", "unexpected":"bla"}`
-	if _, err := ParseIncoming(rawMsg); err != invalidMessage {
+	if _, err := ParseIncoming(rawMsg); err != InvalidMessage {
 		t.Error("should have returned invalid message error")
 	}
 }
