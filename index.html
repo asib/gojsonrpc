@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>gojsonrpc by asib</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">gojsonrpc</h1>
+      <h2 class="project-tagline">A library for working with JSON-RPC APIs in Go.</h2>
+      <a href="https://github.com/asib/gojsonrpc" class="btn">View on GitHub</a>
+      <a href="https://github.com/asib/gojsonrpc/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/asib/gojsonrpc/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><a href="https://godoc.org/github.com/asib/gojsonrpc"><img src="https://godoc.org/github.com/asib/gojsonrpc?status.svg" alt="GoDoc Reference"></a>
+<a href="https://travis-ci.org/asib/gojsonrpc"><img src="https://travis-ci.org/asib/gojsonrpc.svg?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/github/asib/gojsonrpc?branch=master"><img src="https://coveralls.io/repos/github/asib/gojsonrpc/badge.svg?branch=master" alt="Coverage Status"></a>
+<a href=""><img src="https://img.shields.io/github/tag/asib/gojsonrpc.svg?maxAge=2592000" alt="GitHub tag"></a>
+<a href="https://raw.githubusercontent.com/asib/gojsonrpc/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=plastic" alt="GitHub license"></a></p>
+
+<p>A library for working with JSON-RPC APIs in Go.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>To install, run</p>
+
+<div class="highlight highlight-source-shell"><pre>$ go get -u github.com/asib/gojsonrpc</pre></div>
+
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h2>
+
+<div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> main
+
+<span class="pl-k">import</span> (
+    <span class="pl-s"><span class="pl-pds">"</span>encoding/json<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>fmt<span class="pl-pds">"</span></span>
+
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/asib/gojsonrpc<span class="pl-pds">"</span></span>
+)
+
+<span class="pl-k">func</span> <span class="pl-en">handleRequest</span>(<span class="pl-v">req</span> *<span class="pl-v">gojsonrpc</span>.<span class="pl-v">Request</span>) (<span class="pl-v">resp</span> *<span class="pl-v">gojsonrpc</span>.<span class="pl-v">Response</span>) {
+    <span class="pl-k">if</span> req.<span class="pl-c1">Method</span>() == <span class="pl-s"><span class="pl-pds">"</span>login<span class="pl-pds">"</span></span> {
+        <span class="pl-smi">params</span> <span class="pl-k">:=</span> req.<span class="pl-c1">Params</span>().(<span class="pl-k">map</span>[<span class="pl-k">string</span>]<span class="pl-k">interface</span>{})
+
+        <span class="pl-k">if</span> params[<span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>] == <span class="pl-s"><span class="pl-pds">"</span>asib<span class="pl-pds">"</span></span> &amp;&amp; params[<span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>] == <span class="pl-s"><span class="pl-pds">"</span>pass123<span class="pl-pds">"</span></span> {
+            resp = gojsonrpc.<span class="pl-c1">MakeResponseWithResult</span>(<span class="pl-k">map</span>[<span class="pl-k">string</span>]<span class="pl-k">bool</span>{<span class="pl-s"><span class="pl-pds">"</span>success<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>}, req.<span class="pl-c1">ID</span>())
+        } <span class="pl-k">else</span> {
+            resp = gojsonrpc.<span class="pl-c1">MakeResponseWithResult</span>(<span class="pl-k">map</span>[<span class="pl-k">string</span>]<span class="pl-k">bool</span>{<span class="pl-s"><span class="pl-pds">"</span>success<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>}, req.<span class="pl-c1">ID</span>())
+        }
+    }
+
+    <span class="pl-k">return</span>
+}
+
+<span class="pl-k">func</span> <span class="pl-en">main</span>() {
+    <span class="pl-smi">raw</span> <span class="pl-k">:=</span> <span class="pl-s"><span class="pl-pds">`</span>{"jsonrpc":"2.0", "method":"login", "params":{"user":"asib", "password":"pass123"}, "id":1}<span class="pl-pds">`</span></span>
+    <span class="pl-smi">msg</span>, <span class="pl-smi">err</span> <span class="pl-k">:=</span> gojsonrpc.<span class="pl-c1">ParseIncoming</span>(raw)
+    <span class="pl-k">if</span> err != <span class="pl-c1">nil</span> {
+        <span class="pl-c1">panic</span>(err)
+    }
+
+    <span class="pl-k">switch</span> msg.(<span class="pl-k">type</span>) {
+    <span class="pl-k">case</span> *gojsonrpc.<span class="pl-smi">Notification</span>:
+        <span class="pl-c">// do stuff here</span>
+    <span class="pl-k">case</span> *gojsonrpc.<span class="pl-smi">Request</span>:
+        <span class="pl-smi">rawResp</span>, <span class="pl-smi">err</span> <span class="pl-k">:=</span> json.<span class="pl-c1">Marshal</span>(<span class="pl-c1">handleRequest</span>(msg.(*gojsonrpc.<span class="pl-smi">Request</span>)))
+        <span class="pl-k">if</span> err != <span class="pl-c1">nil</span> {
+            <span class="pl-c1">panic</span>(err)
+        } <span class="pl-k">else</span> {
+            fmt.<span class="pl-c1">Println</span>(<span class="pl-k">string</span>(rawResp))
+        }
+    <span class="pl-k">case</span> *gojsonrpc.<span class="pl-smi">Response</span>:
+        <span class="pl-c">// do stuff here</span>
+    <span class="pl-k">default</span>:
+      <span class="pl-c">// handle error case</span>
+    }
+}</pre></div>
+
+<h2>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h2>
+
+<p>Visit the <a href="https://godoc.org/github.com/asib/gojsonrpc">godoc</a> page.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/asib/gojsonrpc">gojsonrpc</a> is maintained by <a href="https://github.com/asib">asib</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
