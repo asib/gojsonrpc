@@ -210,3 +210,17 @@ func TestParseIncomingWithMalformedNotification(t *testing.T) {
 		t.Error("should have returned invalid message error")
 	}
 }
+
+func TestParseIncomingWithErrorResponseWithMalformedError(t *testing.T) {
+	rawMsg := `{"jsonrpc":"2.0", "id":1, "error":{"code":1, "message":"test", "data":null, "unexp":false}}`
+	if _, err := ParseIncoming(rawMsg); err != InvalidMessage {
+		t.Error("should have returned invalid message error")
+	}
+}
+
+func TestParseIncomingWithErrorResponseWithError(t *testing.T) {
+	rawMsg := `{"jsonrpc":"2.0", "id":1, "error":{"code":1, "message":"test", "data":null}}`
+	if _, err := ParseIncoming(rawMsg); err != nil {
+		t.Error("should not have returned error")
+	}
+}

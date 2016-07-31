@@ -10,7 +10,7 @@ import (
 // relevant types: Notification, Request or Response. Callers must run a type
 // assertion to identify which type was returned.
 func ParseIncoming(message string) (Message, error) {
-	incomingMap := make(map[string]json.RawMessage)
+	var incomingMap map[string]json.RawMessage
 	err := json.Unmarshal([]byte(message), &incomingMap)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,21 @@ func ParseIncoming(message string) (Message, error) {
 		return parseIncomingNotification([]byte(message))
 	} else if isRequest(keys) {
 		return parseIncomingRequest([]byte(message))
-	} else if isErrorResponse(keys) || isResultResponse(keys) {
+	} else if isErrorResponse(keys) {
+		// Check that the error is valid
+		var errorMap map[string]interface{}
+		if err := json.Unmarshal(incomingMap[ErrorKey], &errorMap); err != nil {
+			return nil, err
+		}
+
+		var errKeys []string
+		for k := range errorMap {
+			errKeys = append(errKeys, k)
+		}
+		if isValidResponseError(errKeys) {
+			return parseIncomingResponse([]byte(message))
+		}
+	} else if isResultResponse(keys) {
 		return parseIncomingResponse([]byte(message))
 	}
 
@@ -145,6 +159,10 @@ func isRequest(keys []string) bool {
 
 func isErrorResponse(keys []string) bool {
 	return areKeySetsMatching(keys, ErrorResponseValidAndExpectedKeys())
+}
+
+func isValidResponseError(keys []string) bool {
+	return areKeySetsMatching(keys, ErrorValidAndExpectedKeys())
 }
 
 func isResultResponse(keys []string) bool {

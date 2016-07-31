@@ -41,6 +41,13 @@ func MakeError(code int, message string, data interface{}) *Error {
 	}
 }
 
+// This function returns a map whose keys are all the possible fields in a
+// response error, mapped to whether they are required fields. This mapping is
+// used by ParseIncoming to determine whether a response error is valid.
+func ErrorValidAndExpectedKeys() map[string]bool {
+	return map[string]bool{"code": true, "message": true, "data": false}
+}
+
 // This method is used by the encoding/json package when json.Marshal is
 // called on an Error struct (or a Response struct). Do not directly call this
 // method. Instead, attach the Error to a Response using MakeResponseWithError,
