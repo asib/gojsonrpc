@@ -38,13 +38,11 @@ func (r *Request) ID() uint {
 	return r.requestData.ID
 }
 
-// This function returns a map whose keys are all the possible fields in a
+// RequestValidAndExpectedKeys is a map whose keys are all the possible fields in a
 // request, mapped to whether they are required fields (e.g. params is not a
 // required field for a request, so it maps to false). This mapping is used by
 // ParseIncoming to determine the type of the incoming message.
-func RequestValidAndExpectedKeys() map[string]bool {
-	return map[string]bool{"jsonrpc": true, "method": true, "params": false, "id": true}
-}
+var RequestValidAndExpectedKeys = map[string]bool{"jsonrpc": true, "method": true, "params": false, "id": true}
 
 // MakeRequest is used to create Request structs - do not try to use a struct
 // literal. You may pass nil for the params argument. Else, params must be an

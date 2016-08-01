@@ -115,21 +115,21 @@ func parseIncomingResponse(jsonResp []byte) (*Response, error) {
 }
 
 func isNotification(keys []string) bool {
-	return AreKeySetsMatching(keys, NotificationValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, NotificationValidAndExpectedKeys)
 }
 
 func isRequest(keys []string) bool {
-	return AreKeySetsMatching(keys, RequestValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, RequestValidAndExpectedKeys)
 }
 
 func isErrorResponse(keys []string) bool {
-	return AreKeySetsMatching(keys, ErrorResponseValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, ErrorResponseValidAndExpectedKeys)
 }
 
 func isValidResponseError(keys []string) bool {
-	return AreKeySetsMatching(keys, ErrorValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, ErrorValidAndExpectedKeys)
 }
 
 func isResultResponse(keys []string) bool {
-	return AreKeySetsMatching(keys, ResultResponseValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, ResultResponseValidAndExpectedKeys)
 }

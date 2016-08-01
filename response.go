@@ -56,19 +56,15 @@ func (r *Response) IsError() bool {
 	return !r.IsResult()
 }
 
-// This function returns a map whose keys are all the possible fields in a result
+// ResultResponseValidAndExpectedKeys is a map whose keys are all the possible fields in a result
 // response, mapped to whether they are required fields. This mapping is used
 // by ParseIncoming to determine the type of the incoming message.
-func ResultResponseValidAndExpectedKeys() map[string]bool {
-	return map[string]bool{"jsonrpc": true, "result": true, "id": true}
-}
+var ResultResponseValidAndExpectedKeys = map[string]bool{"jsonrpc": true, "result": true, "id": true}
 
-// This function returns a map whose keys are all the possible fields in an error
+// ErrorResponseValidAndExpectedKeys is a map whose keys are all the possible fields in an error
 // response, mapped to whether they are required fields. This mapping is used
 // by ParseIncoming to determine the type of the incoming message.
-func ErrorResponseValidAndExpectedKeys() map[string]bool {
-	return map[string]bool{"jsonrpc": true, "error": true, "id": true}
-}
+var ErrorResponseValidAndExpectedKeys = map[string]bool{"jsonrpc": true, "error": true, "id": true}
 
 func makeResponse(result interface{}, err *Error, id uint, _type responseType) *Response {
 	return &Response{

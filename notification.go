@@ -33,13 +33,11 @@ func (n *Notification) Params() interface{} {
 	return n.notificationData.Params
 }
 
-// This function returns a map whose keys are all the possible fields in a
+// NotificationValidAndExpectedKeys is a map whose keys are all the possible fields in a
 // notification, mapped to whether they are required fields (e.g. params is not
 // a required field for a notification, so it maps to false). This mapping is
 // used by ParseIncoming to determine the type of the incoming message.
-func NotificationValidAndExpectedKeys() map[string]bool {
-	return map[string]bool{"jsonrpc": true, "method": true, "params": false}
-}
+var NotificationValidAndExpectedKeys = map[string]bool{"jsonrpc": true, "method": true, "params": false}
 
 // MakeNotification is used to create Notification structs - do not try to create
 // Notification's using a struct literal. You may pass nil for the params argument.
