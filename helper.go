@@ -114,57 +114,22 @@ func parseIncomingResponse(jsonResp []byte) (*Response, error) {
 	return resp, nil
 }
 
-func areKeySetsMatching(existingKeys []string, expectedKeys map[string]bool) bool {
-	// Make sure all required keys exist.
-	for k, expected := range expectedKeys {
-		// If this key is expected, look for it in existingKeys
-		if expected {
-			found := false
-			for _, existing := range existingKeys {
-				if k == existing {
-					found = true
-					break
-				}
-			}
-			// If we didn't find it, then we already know keysets aren't matching,
-			// so we return false.
-			if !found {
-				return false
-			}
-		}
-	}
-
-	// Make sure we don't have any extra, unexpected keys.
-	for _, existing := range existingKeys {
-		// If there is a mapping whose key is `existing`, then regardless of whether
-		// it is required or not, it's valid, so we allow it. Only if the key is
-		// invalid (i.e. not required and not even an optional field) do we return
-		// false.
-		if _, ok := expectedKeys[existing]; !ok { // here we are checking if the key `existing` is in the map `expectedKeys`
-			return false
-		}
-	}
-
-	// If we managed to reach this point, then the keysets are matching.
-	return true
-}
-
 func isNotification(keys []string) bool {
-	return areKeySetsMatching(keys, NotificationValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, NotificationValidAndExpectedKeys())
 }
 
 func isRequest(keys []string) bool {
-	return areKeySetsMatching(keys, RequestValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, RequestValidAndExpectedKeys())
 }
 
 func isErrorResponse(keys []string) bool {
-	return areKeySetsMatching(keys, ErrorResponseValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, ErrorResponseValidAndExpectedKeys())
 }
 
 func isValidResponseError(keys []string) bool {
-	return areKeySetsMatching(keys, ErrorValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, ErrorValidAndExpectedKeys())
 }
 
 func isResultResponse(keys []string) bool {
-	return areKeySetsMatching(keys, ResultResponseValidAndExpectedKeys())
+	return AreKeySetsMatching(keys, ResultResponseValidAndExpectedKeys())
 }
