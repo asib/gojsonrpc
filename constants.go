@@ -1,3 +1,5 @@
+//go:generate stringer -type=ParseError
+//go:generate stringer -type=ObjectError
 package gojsonrpc
 
 import "fmt"
@@ -38,11 +40,9 @@ const (
 	InvalidMessage
 )
 
-var parseErrors = []string{"invalid version", "invalid message"}
-
 // This method returns the string representation of a ParseError.
 func (e ParseError) Error() string {
-	return fmt.Sprintf("gojsonrpc: parse error: %s", parseErrors[e])
+	return fmt.Sprintf("gojsonrpc: parse error: %s", e.String())
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -58,12 +58,7 @@ const (
 	InvalidResponseNilError
 )
 
-var objectErrors = []string{"invalid notification: invalid params type",
-	"invalid request: invalid params type",
-	"invalid response: nil result",
-	"invalid response: nil error"}
-
 // This method returns the string representation of an ObjectError.
 func (e ObjectError) Error() string {
-	return fmt.Sprintf("gojsonrpc: object error: %s", objectErrors[e])
+	return fmt.Sprintf("gojsonrpc: object error: %s", e.String())
 }
